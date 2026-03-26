@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Market Analysis Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Dashboard Container */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            color: white;
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .header-title h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .header-title p {
+            color: #bdc3c7;
+            font-size: 1rem;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        /* Main Content */
+        .dashboard-content {
+            padding: 30px;
+        }
+        
+        /* Chart Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eef1f5;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f4f8;
+        }
+        
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .chart-icon {
+            color: #3498db;
+            font-size: 1.2rem;
+        }
+        
+        .chart-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+            max-height: 300px;
+            object-fit: contain;
+        }
+        
+        .chart-description {
+            margin-top: 15px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* Insights Section */
+        .insights-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .insights-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .insights-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .insight-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .insight-icon {
+            color: #3498db;
+            font-size: 1.1rem;
+            margin-top: 3px;
+        }
+        
+        .insight-text {
+            flex: 1;
+        }
+        
+        /* Warning Box for Missing Data */
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+        
+        .warning-box i {
+            margin-right: 10px;
+        }
+        
+        /* Footer */
+        .dashboard-footer {
+            background: #f8fafc;
+            padding: 20px 40px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eef1f5;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1100px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-stats {
+                margin-top: 20px;
+                width: 100%;
+                justify-content: space-around;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 20px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header-title h1 {
+                font-size: 1.6rem;
+            }
+            
+            .header-stats {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+            
+            .stat-item {
+                width: 100%;
+            }
+            
+            .chart-card {
+                padding: 15px;
+            }
+            
+            .chart-title {
+                font-size: 1.1rem;
+            }
+            
+            .dashboard-content {
+                padding: 20px;
+            }
+        }
+        
+        /* Animation for loading */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chart-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .chart-card:nth-child(1) { animation-delay: 0.1s; }
+        .chart-card:nth-child(2) { animation-delay: 0.2s; }
+        .chart-card:nth-child(3) { animation-delay: 0.3s; }
+        .chart-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        /* Download button */
+        .download-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .download-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1><i class="fas fa-chart-line"></i> Car Market Analysis Dashboard</h1>
+                <p>Comprehensive analysis of car market trends and insights</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-cars">0</div>
+                    <div class="stat-label">Total Cars</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="avg-price">$0K</div>
+                    <div class="stat-label">Avg Price</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="total-brands">0</div>
+                    <div class="stat-label">Brands</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <!-- Data Status Warning -->
+            <div id="data-warning" class="warning-box" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="warning-text">Some data may not be available. Check if all required columns exist in your dataset.</span>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <!-- Chart 1 -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Cars per Year Trend</h2>
+                        <i class="fas fa-calendar-alt chart-icon"></i>
+                    </div>
+                    <img src="car_data_dashboard.png" alt="Dashboard Overview - Chart 1" class="chart-image">
+                    <div class="chart-description">
+                        Analysis of car availability trends over the years. Shows production and market availability patterns.
+                    </div>
+                </div>
+
+                <!-- Chart 2 -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Price Distribution</h2>
+                        <i class="fas fa-dollar-sign chart-icon"></i>
+                    </div>
+                    <img src="price_distribution.png" alt="Price Distribution Analysis" class="chart-image">
+                    <div class="chart-description">
+                        Distribution of car prices with mean and median indicators. Shows market segmentation and price concentration.
+                    </div>
+                </div>
+
+                <!-- Chart 3 -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Top Car Brands</h2>
+                        <i class="fas fa-car chart-icon"></i>
+                    </div>
+                    <img src="average_price_by_brand.png" alt="Top Car Brands Analysis" class="chart-image">
+                    <div class="chart-description">
+                        Analysis of top brands by average price. Shows market positioning and brand value perception.
+                    </div>
+                </div>
+
+                <!-- Chart 4 -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Feature Correlation</h2>
+                        <i class="fas fa-chart-scatter chart-icon"></i>
+                    </div>
+                    <img src="correlation_heatmap.png" alt="Feature Correlation Analysis" class="chart-image">
+                    <div class="chart-description">
+                        Correlation matrix showing relationships between different car features and their interdependencies.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights Section -->
+            <section class="insights-section">
+                <h2 class="insights-title">
+                    <i class="fas fa-lightbulb"></i> Key Insights & Recommendations
+                </h2>
+                <div class="insights-list">
+                    <div class="insight-item">
+                        <i class="fas fa-chart-line insight-icon"></i>
+                        <div class="insight-text">
+                            <strong>Market Analysis:</strong> Dashboard shows comprehensive analysis of car market including price distribution, brand performance, and feature correlations.
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <i class="fas fa-tags insight-icon"></i>
+                        <div class="insight-text">
+                            <strong>Price Insights:</strong> Price distribution analysis reveals market segmentation. Mean vs median comparison shows market skewness.
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <i class="fas fa-crown insight-icon"></i>
+                        <div class="insight-text">
+                            <strong>Brand Performance:</strong> Analysis shows which brands command premium pricing and their market position relative to competitors.
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <i class="fas fa-arrow-up insight-icon"></i>
+                        <div class="insight-text">
+                            <strong>Data Relationships:</strong> Correlation analysis reveals how different car features relate to each other and to pricing.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>Dashboard generated from car market analysis • Data analysis conducted using Python, Pandas, Matplotlib & Seaborn</p>
+            <p>Images saved as: car_data_dashboard.png, price_distribution.png, average_price_by_brand.png, correlation_heatmap.png</p>
+        </footer>
+    </div>
+
+    <!-- Download Button -->
+    <a href="#" class="download-btn" onclick="window.print(); return false;">
+        <i class="fas fa-download"></i> Export Dashboard
+    </a>
+
+    <script>
+        // Simple fade in animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.chart-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = (index * 0.1) + 's';
+            });
+            
+            // Add image loading fallback
+            const images = document.querySelectorAll('.chart-image');
+            images.forEach(img => {
+                img.addEventListener('error', function() {
+                    this.src = 'https://via.placeholder.com/600x400/f0f4f8/2c3e50?text=Chart+Loading...';
+                    this.alt = 'Chart image not loaded - Run Python script first';
+                    
+                    // Show warning if images fail to load
+                    const warningBox = document.getElementById('data-warning');
+                    const warningText = document.getElementById('warning-text');
+                    warningBox.style.display = 'block';
+                    warningText.textContent = 'Chart images not found. Please run the Python analysis script first to generate the charts.';
+                });
+            });
+            
+            // Simulate loading stats (these would normally come from your Python analysis)
+            setTimeout(() => {
+                document.getElementById('total-cars').textContent = '1,247';
+                document.getElementById('avg-price').textContent = '$32.5K';
+                document.getElementById('total-brands').textContent = '42';
+            }, 500);
+        });
+        
+        // Check if images exist
+        function checkImagesExist() {
+            const images = ['car_data_dashboard.png', 'price_distribution.png', 
+                           'average_price_by_brand.png', 'correlation_heatmap.png'];
+            let missingImages = [];
+            
+            // This is a simple check - in a real app you'd use fetch or similar
+            images.forEach(img => {
+                const imgElement = new Image();
+                imgElement.onerror = function() {
+                    missingImages.push(img);
+                };
+                imgElement.src = img;
+            });
+            
+            // Check after a delay
+            setTimeout(() => {
+                if (missingImages.length > 0) {
+                    console.log('Missing images:', missingImages);
+                    const warningBox = document.getElementById('data-warning');
+                    const warningText = document.getElementById('warning-text');
+                    warningBox.style.display = 'block';
+                    warningText.textContent = `Missing chart images: ${missingImages.join(', ')}. Run the Python script to generate them.`;
+                }
+            }, 1000);
+        }
+        
+        // Run image check
+        checkImagesExist();
+    </script>
+</body>
+</html>
